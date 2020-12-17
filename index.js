@@ -1,51 +1,46 @@
-const express = require('express')
-const bodyParser= require('body-parser')
-const cors = require('cors')
-const app = express()
-require('dotenv').config()
+const express = require('express');
+const app = express();
+const cors = require('cors');
+const bodyParser= require('body-parser');
+const mongoose = require('mongoose');
+require('dotenv').config();
+const uri = `mongodb+srv://Music_Meier:${process.env.PASSWORD}@cluster0.xk3ia.mongodb.net/music?retryWrites=true&w=majority`;
+const User = require('./models/users');
+const Notes = require('./models/notes');
+const port = process.env.PORT || 8003;
 
-app.use(bodyParser.json())
-app.use(cors())
+app.use(bodyParser.json());
+app.use(cors());
 
-const connectionString = `mongodb+srv://Music_Meier:${process.env.PASSWORD}@cluster0.xk3ia.mongodb.net/music-note-frequencies?retryWrites=true&w=majority`;
+mongoose.connect(uri, { 
+  useNewUrlParser: true,
+  useUnifiedTopology: true 
+})
+  .then(console.log('connected to mongoose'))
+  .catch(err => console.log(err))
 
-const MongoClient = require('mongodb').MongoClient
+app.post('/notes', (request, response) => {
+  const { notes } = request.body
+  Notes.create(notes)
+    .then(notes => response.send(notes))
+    .catch(err => response.send(err))
+})
 
-MongoClient.connect(connectionString, { useUnifiedTopology: true })
-  .then(client => {
-    console.log('Connected to Database')
-    const db = client.db('music-note-frequencies')
-    const notesCollection = db.collection('notes')
-    app.post('/notes', (request, response) => {
-      notesCollection.insertOne(request.body)
-        .then(result => {
-          console.log(result)
-        })
-        .catch(error => console.error(error))
-    })
-    // db.collection('notes').insertMany([
-    //   {note: 'C', frequencies: numbers.map(number => number * 16.35), baseFrequency: 16.35},
-    //   {note: 'C sharp', frequencies: numbers.map(number => number * 17.32), baseFrequency: 17.32},
-    //   {note: 'D flat', frequencies: numbers.map(number => number * 17.32), baseFrequency: 17.32},
-    //   {note: 'D', frequencies: numbers.map(number => number * 18.35), baseFrequency: 18.35},
-    //   {note: 'D sharp', frequencies: numbers.map(number => number * 19.45), baseFrequency: 19.45},
-    //   {note: 'E flat', frequencies: numbers.map(number => number * 19.45), baseFrequency: 19.45},
-    //   {note: 'E', frequencies: numbers.map(number => number * 20.60), baseFrequency: 20.60},
-    //   {note: 'F', frequencies: numbers.map(number => number * 21.83), baseFrequency: 21.83},
-    //   {note: 'F sharp', frequencies: numbers.map(number => number * 23.12), baseFrequency: 23.12},
-    //   {note: 'G flat', frequencies: numbers.map(number => number * 23.12), baseFrequency: 23.12},
-    //   {note: 'G', frequencies: numbers.map(number => number * 24.50), baseFrequency: 24.50},
-    //   {note: 'G sharp', frequencies: numbers.map(number => number * 25.96), baseFrequency: 25.96},
-    //   {note: 'A flat', frequencies: numbers.map(number => number * 25.96), baseFrequency: 25.96},
-    //   {note: 'A', frequencies: numbers.map(number => number * 27.50), baseFrequency: 27.50},
-    //   {note: 'A sharp', frequencies: numbers.map(number => number * 29.14), baseFrequency: 29.14},
-    //   {note: 'B flat', frequencies: numbers.map(number => number * 29.14), baseFrequency: 29.14},
-    //   {note: 'B', frequencies: numbers.map(number => number * 30.87), baseFrequency: 30.87}
-    // ])
-    app.get('/notes', (request, response) => {
-      response.json({notes})
-    })
-  })
+app.post('/users', (request, response) => {
+  const { user } = request.body
+  User.create(user)
+    .then(user => response.send(user))
+    .catch(err => response.send(err))
+})
 
+app.get('/users', (request, response) => {
+  User.find({})
+    .then(users => response.send(users))
+})
 
-app.listen(8001)
+app.get('/notes', (request, response) => {
+  Notes.find({})
+    .then(notes => response.send(notes))
+})
+
+app.listen(port, () => console.log(`listening on port: ${port}`))
