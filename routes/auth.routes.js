@@ -9,7 +9,7 @@ router.post('/login', (request, response, next) => {
   let getUser;
   userSchema
     .findOne({
-      userName: request.body.userName
+      username: request.body.username
     })
         .then((user) => {
           if (!user) {
@@ -30,7 +30,7 @@ router.post('/login', (request, response, next) => {
           }
           let jwtToken = jwt.sign(
             {
-              userName: getUser.userName,
+              username: getUser.username,
               userId: getUser._id,
             }, 
             "longer-secret-is-better", 
@@ -54,12 +54,12 @@ router.post('/login', (request, response, next) => {
 router.post("/signup", (request, response, next) => {
   // const salt = bcrypt.genSalt(10);
   // console.log(request.body.users.password) 
-  bcrypt.hash(request.body.users.password, 10).then((hash) => {
+  bcrypt.hash(request.body.password, 10).then((hash) => {
     const user = new userSchema({
-      userName: request.body.users.userName,
-      email: request.body.users.email,
-      firstName: request.body.users.firstName,
-      lastName: request.body.users.lastName,
+      username: request.body.username,
+      email: request.body.email,
+      firstName: request.body.firstName,
+      lastName: request.body.lastName,
       password: hash,
     });
     user.save().then((resultResponse) => {
