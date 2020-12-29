@@ -22,6 +22,7 @@ app.get('/', (request, response) => {
 const bodyParser= require('body-parser');
 
 const Notes = require('./models/notes');
+const Frequencies = require('./models/frequencies');
 const port = process.env.PORT || 8003;
 
 app.use(bodyParser.json());
@@ -43,19 +44,17 @@ app.post('/notes', (request, response) => {
     .catch(err => response.send(err))
 })
 
+app.post('/frequencies', (request, response) => {
+  const { frequencies } = request.body
+  Frequencies.create(frequencies)
+    .then(frequencies => response.send(frequencies))
+    .catch(err => response.send(err))
+})
+
 app.post('/recordings', upload.single('file'), (request, response, next) => {
   console.log(request.file)
   response.sendStatus(201)
 })
-
-
-
-// app.post('/users', (request, response) => {
-//   const { user } = request.body
-//   userSchema.create(user)
-//     .then(user => response.send(user))
-//     .catch(err => response.send(err))
-// })
 
 app.get('/users', (request, response) => {
   User.find({})
@@ -65,6 +64,11 @@ app.get('/users', (request, response) => {
 app.get('/notes', (request, response) => {
   Notes.find({})
     .then(notes => response.send(notes))
+})
+
+app.get('/frequencies', (request, response) => {
+  Frequencies.find({})
+    .then(frequencies => response.send(frequencies))
 })
 
 app.listen(port, () => console.log(`listening on port: ${port}`))
