@@ -7,27 +7,22 @@ const userSchema = require('../models/users');
 
 router.post('/login', (request, response, next) => {
   let getUser;
+  const authFailureErrorMessage = "Auth user Failed";
   userSchema
     .findOne({
       username: request.body.username
     })
         .then((user) => {
-          if (!user) {
-            return response.status(401).json({
-              message: "Auth user Failed"
-            })
-          }
+          if (!user) throw new Error(authFailureErrorMessage)
+          
           getUser = user;
           console.log(getUser)
           return bcrypt.compare(request.body.password, user.password)
         })
         .then((nextResponse) => {
           console.log('penny', nextResponse)
-          if (!nextResponse) {
-            return response.status(401).json({
-              message: "Auth Failed"
-            });     
-          }
+          if (!nextResponse) throw new Error(authFailureErrorMessage)    
+          
           let jwtToken = jwt.sign(
             {
               username: getUser.username,
@@ -37,16 +32,15 @@ router.post('/login', (request, response, next) => {
             {
               expiresIn: "1h"
             });
-            console.log(jwtToken)
           return response.status(200).json({
             token: jwtToken,
             expiresIn: 3600,
             msg: getUser
           });
         })
-      .catch(err => {
+      .catch((err) => {
         return response.status(401).json({
-          message: 'Auth fail for jwt'
+          message: "Auth User Failed"
         });
     });
 });

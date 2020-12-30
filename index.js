@@ -56,11 +56,6 @@ app.post('/recordings', upload.single('file'), (request, response, next) => {
   response.sendStatus(201)
 })
 
-app.get('/users', (request, response) => {
-  User.find({})
-    .then(users => response.send(users))
-})
-
 app.get('/notes', (request, response) => {
   Notes.find({})
     .then(notes => response.send(notes))
