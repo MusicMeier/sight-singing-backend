@@ -20,7 +20,6 @@ router.post('/login', (request, response, next) => {
           return bcrypt.compare(request.body.password, user.password)
         })
         .then((nextResponse) => {
-          console.log('penny', nextResponse)
           if (!nextResponse) throw new Error(authFailureErrorMessage)    
           
           let jwtToken = jwt.sign(
