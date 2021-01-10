@@ -11,7 +11,7 @@
 
 ### `node index.js`
 
-###Docker Setup:
+### Docker Setup:
 
 <p>Inside of your terminal run: <code>docker build -t sight-singing-backend-app:lts -f Dockerfile .</code></p>
 <p>Once the container is built, run: <code>docker run -d -p 8003:8003 --name sight-singing-backend-app sight-singing-backend-app:lst </code></p>
