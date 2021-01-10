@@ -1,5 +1,5 @@
 # sight-singing-backend
-<i>For most of the readme refer to frontend</i>
+<i>For most of the readme refer to frontend</i> [fronend repo](https://github.com/MusicMeier/sight-singing-frontend)
 
 <h2>Setup options:</h2>
 
